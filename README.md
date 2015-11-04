@@ -1,4 +1,4 @@
-DLTS Viewer_distro
+DLTS Viewer distro
 ============
 
 Make sure you have <a href="https://www.mongodb.org/">MongoDB</a> installed and your <a href="https://en.wikipedia.org/wiki/LAMP_(software_bundle)">LAMP</a> set-up with <a href="http://php.net/manual/en/mongo.installation.php">PHP MongoDB extension</a>.
