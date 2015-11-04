@@ -8,6 +8,7 @@ project.conf
 *.local.make
 builds
 configs
+node_modules
 lib/modules/*
 lib/themes/*
 
