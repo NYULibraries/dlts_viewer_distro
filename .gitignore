@@ -1,0 +1,17 @@
+# Ignore configuration files that may contain sensitive information.
+
+.DS_Store
+.project
+.sass-cache
+settings.php
+project.conf
+*.local.make
+builds
+configs
+lib/modules/*
+lib/themes/*
+
+!lib/modules/README
+!lib/themes/README
+!lib/scripts/README
+!lib/configs/default.project.conf

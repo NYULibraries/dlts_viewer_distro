@@ -1,0 +1,22 @@
+{
+  "name": "xml_generator",
+  "description": "Generate DLTS books XML from DLTS Books API endpoints.",
+  "version": "0.0.1",
+  "author": "Alberto Ortiz Flores <aortiz@nyu.edu>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dismorfo/dummy_book.git"
+  },
+  "bugs": {
+    "url": "http://github.com/dismorfo/dummy_book/issues"
+  },
+  "license": "Apache-2.0",
+  "engines": [
+    "node >= 0.8.0"
+  ],
+  "main": "awdl.js",
+  "dependencies": {
+    "request": "*",
+    "js2xmlparser": "*"
+  }
+}
