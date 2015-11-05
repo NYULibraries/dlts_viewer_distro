@@ -130,6 +130,9 @@ if [ ! $SIMULATE ] ; then [ -d $BUILD_DIR/$BUILD_NAME ] || die ${LINENO} 2 "Unab
 # link to the lastes build if BUILD_BASE_NAME it's different from BUILD_NAME
 if [ ! $SIMULATE ] ; then 
   if [ $BUILD_BASE_NAME != $BUILD_NAME ]; then
+    
+    if [ -L ${BUILD_DIR}/${BUILD_BASE_NAME} ]; then echo "Build linked" ; else ln -s ${BUILD_DIR}/${BUILD_NAME} ${BUILD_DIR}/${BUILD_BASE_NAME}  ; fi ;  
+    
     # build base name its a link?
     if [[ -h $BUILD_DIR/$BUILD_BASE_NAME ]]; then
       cd $BUILD_DIR
@@ -137,6 +140,7 @@ if [ ! $SIMULATE ] ; then
       ln -s $BUILD_NAME $BUILD_BASE_NAME
       cd -
     fi
+    
   fi
 fi
 
