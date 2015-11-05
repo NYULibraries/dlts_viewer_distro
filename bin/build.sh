@@ -89,6 +89,10 @@ done
 # load configuration file
 . $CONF_FILE
 
+if [ -z ${BUILD_DIR}/${BUILD_BASE_NAME} ]; then echo YOYO ; else echo BUBU ; fi ; fi ;
+    
+exit 1;
+
 TEMP_DIR=${DIR}/../temp
 
 STEP_0="mkdir ${TEMP_DIR}" ;
@@ -150,7 +154,15 @@ STEP_3="${DIR}/link_build.sh -c ${CONF_FILE}" ;
 if [ ! $SIMULATE ] ; 
   then 
     eval $STEP_3 ;    
+    
+    if [ -z ${BUILD_DIR}/${BUILD_BASE_NAME} ]; then
+    
+    exit 1;
+      
+      
     cp -r ${DIR}/../lib/profiles/viewer ${BUILD_DIR}/${BUILD_BASE_NAME}/profiles/viewer
+    
+    
     if [ $? ] ; then echo "Successful: Reuse code that has been linked in the lib folder." ; else die ${LINENO} 3 "Fail: Reuse code that has been linked in the lib folder." ; fi ; 
   else 
     tell ${LINENO} 3 "${STEP_3}" ;
@@ -174,13 +186,19 @@ fi ;
 if [ ! $SIMULATE ] ; then if is_drupal_online ; then echo "Successful: Drupal is online" ; else die ${LINENO} "test" "Fail: Drupal is offline." ; fi ; fi; 
 
 if [ -f $BUILD_DIR/$BUILD_NAME/sites/default/settings.php ] ; then
-  chmod 777 $BUILD_DIR/$BUILD_NAME/sites/default/settings.php ;
-  if [ $? ] ; then echo "Successful: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default/settings.php permission to 777." ; else die ${LINENO} "test" "Fail: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default/settings.php permission to 777." ; fi ;    
+  chmod 775 $BUILD_DIR/$BUILD_NAME/sites/default/settings.php ;
+  if [ $? ] ; then echo "Successful: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default/settings.php permission to 775." ; else die ${LINENO} "test" "Fail: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default/settings.php permission to 775." ; fi ;    
 fi ;
 
-if [ -f $BUILD_DIR/$BUILD_NAME/sites/default ] ; then
-  chmod 777 $BUILD_DIR/$BUILD_NAME/sites/default ;
-  if [ $? ] ; then echo "Successful: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default permission to 777." ; else die ${LINENO} "test" "Fail: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default permission to 777." ; fi ;
+if [ -d $BUILD_DIR/$BUILD_NAME/sites/default ] ; then
+  chmod 775 $BUILD_DIR/$BUILD_NAME/sites/default ;
+  if [ $? ] ; then echo "Successful: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default permission to 775." ; else die ${LINENO} "test" "Fail: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default permission to 775." ; fi ;
+fi ;
+
+if [ -d $BUILD_DIR/$BUILD_NAME/sites/all/libraries/openlayers ] ; then
+  # Build OpenLayers library
+  sh ${DIR}/build_openlayers.sh -b ${BUILD_DIR}/${BUILD_NAME}
+  if [ $? ] ; then echo "Successful: Build OpenLayers library from source." ; else die ${LINENO} "test" "Fail: Build OpenLayers library from source.." ; fi ;
 fi ;
 
 # Step 5: Remove text files and rename install.php to install.php.off
@@ -220,13 +238,6 @@ if [ ! $SIMULATE ] ;
   else 
     tell ${LINENO} 7 "${STEP_7}" ;
 fi ;
-
-# build OpenLayers library
-if [ ! $SIMULATE ] ; 
-  then
-    sh ${DIR}/build_openlayers.sh -b ${BUILD_DIR}/${BUILD_NAME}
-fi ;
-
 
 if [ ! $SIMULATE ] ; 
   then
