@@ -73,13 +73,6 @@ projects[dlts_viewer][download][type] = "git"
 projects[dlts_viewer][download][url] = "https://github.com/NYULibraries/dlts_viewer.git"
 projects[dlts_viewer][type] = "module"
 
-; Modules
-; Please fill the following out. Type may be one of get, git, bzr or svn,
-; and url is the url of the download.
-projects[dlts_image][download][type] = "git"
-projects[dlts_image][download][url] = "https://github.com/dismorfo/dlts_image.git"
-projects[dlts_image][type] = "module"
-
 ; Libraries
 
 libraries[Mobile_Detect][download][type] = "git"

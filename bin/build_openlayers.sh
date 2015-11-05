@@ -14,7 +14,7 @@ while getopts ":b:h" opt; do
       ;;
     h)
       echo " "
-      echo " Usage: ./migrate.sh -c example.conf"
+      echo " Usage: ./bin/build_openlayers.sh -c example.conf"
       echo " "
       echo " Options:"
       echo "   -h           Show brief help"
