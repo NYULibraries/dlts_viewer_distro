@@ -89,10 +89,6 @@ done
 # load configuration file
 . $CONF_FILE
 
-if [ -z ${BUILD_DIR}/${BUILD_BASE_NAME} ]; then echo YOYO ; else echo BUBU ; fi ; fi ;
-    
-exit 1;
-
 TEMP_DIR=${DIR}/../temp
 
 STEP_0="mkdir ${TEMP_DIR}" ;
@@ -134,9 +130,7 @@ if [ ! $SIMULATE ] ; then [ -d $BUILD_DIR/$BUILD_NAME ] || die ${LINENO} 2 "Unab
 # link to the lastes build if BUILD_BASE_NAME it's different from BUILD_NAME
 if [ ! $SIMULATE ] ; then 
   if [ $BUILD_BASE_NAME != $BUILD_NAME ]; then
-    
     if [ -L ${BUILD_DIR}/${BUILD_BASE_NAME} ]; then echo "Build linked" ; else ln -s ${BUILD_DIR}/${BUILD_NAME} ${BUILD_DIR}/${BUILD_BASE_NAME}  ; fi ;  
-    
     # build base name its a link?
     if [[ -h $BUILD_DIR/$BUILD_BASE_NAME ]]; then
       cd $BUILD_DIR
@@ -154,15 +148,7 @@ STEP_3="${DIR}/link_build.sh -c ${CONF_FILE}" ;
 if [ ! $SIMULATE ] ; 
   then 
     eval $STEP_3 ;    
-    
-    if [ -z ${BUILD_DIR}/${BUILD_BASE_NAME} ]; then
-    
-    exit 1;
-      
-      
     cp -r ${DIR}/../lib/profiles/viewer ${BUILD_DIR}/${BUILD_BASE_NAME}/profiles/viewer
-    
-    
     if [ $? ] ; then echo "Successful: Reuse code that has been linked in the lib folder." ; else die ${LINENO} 3 "Fail: Reuse code that has been linked in the lib folder." ; fi ; 
   else 
     tell ${LINENO} 3 "${STEP_3}" ;
