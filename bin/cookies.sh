@@ -32,7 +32,7 @@ while getopts ":c:hdb" opt; do
       ;;
     h)
       echo " "
-      echo " Usage: ./migrate.sh -c example.conf"
+      echo " Usage: ./bin/cookies.sh -c example.conf"
       echo " "
       echo " Options:"
       echo "   -h           Show brief help"
@@ -54,7 +54,7 @@ if [[ -f $BUILD_ROOT/index.php ]]; then
   MATCH=`grep -c 'DRUPAL_ROOT' $BUILD_ROOT/index.php` 
   if [ $MATCH -gt 0 ]; then
     # share cookie
-    echo "\$cookie_domain = '.${COOKIE_DOMAIN}';" >> ${BUILD_ROOT}/sites/default/settings.php
+    echo "\$cookie_domain = '${COOKIE_DOMAIN}';" >> ${BUILD_ROOT}/sites/default/settings.php
   fi
 fi
 
