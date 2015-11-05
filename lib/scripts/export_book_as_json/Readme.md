@@ -1,7 +1,7 @@
-XML generator
+JSON generator
 ==========
 
-Generate DLTS books XML from DLTS Books API endpoints using NodeJS.
+Generate DLTS books JSON from DLTS Books API endpoints using NodeJS.
 
 ## Installation
 
@@ -14,5 +14,5 @@ $ npm install
   Run each script
 
 ```bash
-node books.js
+node app.js
 ```
