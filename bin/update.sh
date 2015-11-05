@@ -13,7 +13,7 @@ done
 
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-MAKE_FILE=$DIR/../mediacommons.make
+MAKE_FILE=$DIR/../site.make
 
 # make sure the most recent changes to *.make file are in place
 rm $MAKE_FILE
