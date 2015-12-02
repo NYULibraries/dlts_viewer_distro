@@ -19,9 +19,15 @@ function is_drupal_online () {
   # Using $(echo $DRUSH_STATUS_COMMAND) to remove extra whitespace
   tell ${LINENO} 'is_drupal_online()' "$(echo $DRUSH_STATUS_COMMAND)"
 
-  SITE_ONLINE=`${DRUSH_STATUS_COMMAND}`
+  # NOTE: 2>&1 doesn't work when put into DRUSH_STATUS_COMMAND string, so have to
+  #   do the redirect here.
+  SITE_ONLINE=`${DRUSH_STATUS_COMMAND} 2>&1`
 
-  if [[ $SITE_ONLINE =~ "Connected" ]] && [[ $SITE_ONLINE =~ "Successful" ]] ; then return 0 ; else return 1 ; fi
+  if [[ $SITE_ONLINE =~ "Successfully connected to the Drupal database" ]] && \
+     [[ $SITE_ONLINE =~ "Drupal bootstrap                :  Successful" ]]
+     then return 0
+     else return 1
+   fi
 }
 
 SOURCE="${BASH_SOURCE[0]}"
