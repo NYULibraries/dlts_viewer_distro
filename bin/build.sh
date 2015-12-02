@@ -11,8 +11,23 @@ tell () {
 }
 
 function is_drupal_online () {
-  SITE_ONLINE=`drush -d -v core-status --root=${BUILD_DIR}/${BUILD_NAME} --uri=${BASE_URL} --user=1`
-  if [[ $SITE_ONLINE =~ "Connected" ]] && [[ $SITE_ONLINE =~ "Successful" ]] ; then return 0 ; else return 1 ; fi
+  DRUSH_STATUS_COMMAND="${DRUSH} -d -v core-status \
+    --root=${BUILD_DIR}/${BUILD_NAME}              \
+    --uri=${BASE_URL}                              \
+    --user=1"
+
+  # Using $(echo $DRUSH_STATUS_COMMAND) to remove extra whitespace
+  tell ${LINENO} 'is_drupal_online()' "$(echo $DRUSH_STATUS_COMMAND)"
+
+  # NOTE: 2>&1 doesn't work when put into DRUSH_STATUS_COMMAND string, so have to
+  #   do the redirect here.
+  SITE_ONLINE=`${DRUSH_STATUS_COMMAND} 2>&1`
+
+  if [[ $SITE_ONLINE =~ "Successfully connected to the Drupal database" ]] && \
+     [[ $SITE_ONLINE =~ "Drupal bootstrap                :  Successful" ]]
+     then return 0
+     else return 1
+   fi
 }
 
 SOURCE="${BASH_SOURCE[0]}"
@@ -29,6 +44,8 @@ done
 TODAY=`date +%Y%m%d`
 
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+DRUSH=$DIR/drush
 
 DEBUG=""
 
@@ -119,7 +136,7 @@ if [ -z ${DRUPAL_ACCOUNT_PASS} -a ${DRUPAL_ACCOUNT_PASS}=="" ]; then DRUPAL_ACCO
 echo "Prepare new site using ${MAKE_FILE}." ;
 
 # Step 2: Download and prepare for the installation using make file
-STEP_2="drush ${DEBUG} make --prepare-install -y ${MAKE_FILE} ${BUILD_DIR}/${BUILD_NAME} --uri=${BASE_URL} --environment=${ENVIRONMENT} --strict=0" ;
+STEP_2="${DRUSH} ${DEBUG} make --prepare-install -y ${MAKE_FILE} ${BUILD_DIR}/${BUILD_NAME} --uri=${BASE_URL} --environment=${ENVIRONMENT} --strict=0" ;
 
 if [ ! $SIMULATE ] ; then eval $STEP_2 ; else tell ${LINENO} 2 "${STEP_2}" ; fi ;
 
@@ -157,7 +174,7 @@ fi ;
 echo "Install new site" ;
 
 # Step 4: Run the site installation
-STEP_4="drush ${DEBUG} -y site-install ${DRUPAL_INSTALL_PROFILE_NAME} --site-name='${DRUPAL_SITE_NAME}' --account-pass="${DRUPAL_ACCOUNT_PASS}" --account-name=${DRUPAL_ACCOUNT_NAME} --account-mail=${DRUPAL_ACCOUNT_MAIL} --site-mail=${DRUPAL_SITE_MAIL} --db-url=${DRUPAL_SITE_DB_TYPE}://${DRUPAL_SITE_DB_USER}:${DRUPAL_SITE_DB_PASS}@${DRUPAL_SITE_DB_ADDRESS}/${DRUPAL_DB_NAME} --root=${BUILD_DIR}/${BUILD_NAME} --environment=${ENVIRONMENT} --strict=0"
+STEP_4="${DRUSH} ${DEBUG} -y site-install ${DRUPAL_INSTALL_PROFILE_NAME} --site-name='${DRUPAL_SITE_NAME}' --account-pass="${DRUPAL_ACCOUNT_PASS}" --account-name=${DRUPAL_ACCOUNT_NAME} --account-mail=${DRUPAL_ACCOUNT_MAIL} --site-mail=${DRUPAL_SITE_MAIL} --db-url=${DRUPAL_SITE_DB_TYPE}://${DRUPAL_SITE_DB_USER}:${DRUPAL_SITE_DB_PASS}@${DRUPAL_SITE_DB_ADDRESS}/${DRUPAL_DB_NAME} --root=${BUILD_DIR}/${BUILD_NAME} --environment=${ENVIRONMENT} --strict=0"
 
 echo $STEP_4 ;
 

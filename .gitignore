@@ -16,3 +16,6 @@ lib/themes/*
 !lib/themes/README
 !lib/scripts/README
 !configs/default.project.conf
+
+# Intellij IDEA (and PHPStorm, WebStorm)
+.idea/

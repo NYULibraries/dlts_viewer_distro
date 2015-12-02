@@ -9,7 +9,7 @@ while getopts ":b:h" opt; do
   case $opt in
     b)
       echo $OPTARG
-      [ -d $OPTARG ] || die "Build direcotry does not exist." 
+      [ -d $OPTARG ] || die "Build directory does not exist."
       BUILD=$OPTARG
       ;;
     h)
