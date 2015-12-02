@@ -11,7 +11,16 @@ tell () {
 }
 
 function is_drupal_online () {
-  SITE_ONLINE=`${DRUSH} -d -v core-status --root=${BUILD_DIR}/${BUILD_NAME} --uri=${BASE_URL} --user=1`
+  DRUSH_STATUS_COMMAND="${DRUSH} -d -v core-status \
+    --root=${BUILD_DIR}/${BUILD_NAME}              \
+    --uri=${BASE_URL}                              \
+    --user=1"
+
+  # Using $(echo $DRUSH_STATUS_COMMAND) to remove extra whitespace
+  tell ${LINENO} 'is_drupal_online()' "$(echo $DRUSH_STATUS_COMMAND)"
+
+  SITE_ONLINE=`${DRUSH_STATUS_COMMAND}`
+
   if [[ $SITE_ONLINE =~ "Connected" ]] && [[ $SITE_ONLINE =~ "Successful" ]] ; then return 0 ; else return 1 ; fi
 }
 
