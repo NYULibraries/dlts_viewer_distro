@@ -16,6 +16,9 @@ function is_drupal_online () {
     --uri=${BASE_URL}                              \
     --user=1"
 
+  DRUPAL_DATABASE_CONNECTION_OK="Successfully connected to the Drupal database"
+  DRUPAL_BOOTSTRAP_OK="Drupal bootstrap                :  Successful"
+
   # Using $(echo $DRUSH_STATUS_COMMAND) to remove extra whitespace
   tell ${LINENO} 'is_drupal_online()' "$(echo $DRUSH_STATUS_COMMAND)"
 
@@ -23,8 +26,8 @@ function is_drupal_online () {
   #   do the redirect here.
   SITE_ONLINE=`${DRUSH_STATUS_COMMAND} 2>&1`
 
-  if [[ $SITE_ONLINE =~ "Successfully connected to the Drupal database" ]] && \
-     [[ $SITE_ONLINE =~ "Drupal bootstrap                :  Successful" ]]
+  if [[ $SITE_ONLINE =~ $DRUPAL_DATABASE_CONNECTION_OK ]] && \
+     [[ $SITE_ONLINE =~ $DRUPAL_BOOTSTRAP_OK ]]
      then return 0
      else return 1
    fi
@@ -45,8 +48,6 @@ TODAY=`date +%Y%m%d`
 
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-DRUSH=$DIR/drush
-
 DEBUG=""
 
 ENVIRONMENT="local"
@@ -56,7 +57,7 @@ PHPTEST=`php -info | grep mongo`
 
 if [ -z "$PHPTEST" ]; then die ${LINENO} "test" "Fail: This project needs MongoDB PHP extension."; fi ;
 
-while getopts ":e:c:m:hdsikt" opt; do
+while getopts ":e:c:m:hdlsikt" opt; do
  case $opt in
   c)
    [ -f $OPTARG ] || die "Configuration file does not exist." 
@@ -71,6 +72,9 @@ while getopts ":e:c:m:hdsikt" opt; do
     ;;
   d)
     DEBUG='-d -v'
+    ;;
+  l)
+    LEGACY_DRUSH=true
     ;;
   s)
     SASS=true
@@ -98,6 +102,17 @@ while getopts ":e:c:m:hdsikt" opt; do
    ;;
   esac
 done
+
+# https://jira.nyu.edu/browse/DLTSVIEWER-16
+# Our web server php is lower than version 5.4, which causes bin/drush to break.
+if [ $LEGACY_DRUSH ]
+then
+    DRUSH=$(which drush)
+else
+    DRUSH=$DIR/drush
+fi
+
+tell ${LINENO} 'Set DRUSH' "\$DRUSH=${DRUSH}"
 
 [ $CONF_FILE ] || die "No configuration file provided."
 
