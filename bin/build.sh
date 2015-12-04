@@ -16,6 +16,9 @@ function is_drupal_online () {
     --uri=${BASE_URL}                              \
     --user=1"
 
+  DRUPAL_DATABASE_CONNECTION_OK="Successfully connected to the Drupal database"
+  DRUPAL_BOOTSTRAP_OK="Drupal bootstrap                :  Successful"
+
   # Using $(echo $DRUSH_STATUS_COMMAND) to remove extra whitespace
   tell ${LINENO} 'is_drupal_online()' "$(echo $DRUSH_STATUS_COMMAND)"
 
@@ -23,8 +26,8 @@ function is_drupal_online () {
   #   do the redirect here.
   SITE_ONLINE=`${DRUSH_STATUS_COMMAND} 2>&1`
 
-  if [[ $SITE_ONLINE =~ "Successfully connected to the Drupal database" ]] && \
-     [[ $SITE_ONLINE =~ "Drupal bootstrap                :  Successful" ]]
+  if [[ $SITE_ONLINE =~ $DRUPAL_DATABASE_CONNECTION_OK ]] && \
+     [[ $SITE_ONLINE =~ $DRUPAL_BOOTSTRAP_OK ]]
      then return 0
      else return 1
    fi
