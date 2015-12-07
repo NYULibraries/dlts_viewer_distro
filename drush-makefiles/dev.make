@@ -71,6 +71,7 @@ projects[tao][version] = "3.1"
 ; and url is the url of the download.
 projects[dlts_viewer][download][type] = "git"
 projects[dlts_viewer][download][url] = "https://github.com/NYULibraries/dlts_viewer.git"
+projects[dlts_viewer][download][branch] = "develop"
 projects[dlts_viewer][type] = "module"
 
 ; Libraries
