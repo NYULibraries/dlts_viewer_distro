@@ -17,5 +17,10 @@ lib/themes/*
 !lib/scripts/README
 !configs/default.project.conf
 
+temp/
+
 # Intellij IDEA (and PHPStorm, WebStorm)
 .idea/
+
+# Custom local drush makefiles for temporary branches and local-specific builds
+drush-makefiles/ad-hoc.make
