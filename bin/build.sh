@@ -57,7 +57,7 @@ PHPTEST=`php -info | grep mongo`
 
 if [ -z "$PHPTEST" ]; then die ${LINENO} "test" "Fail: This project needs MongoDB PHP extension."; fi ;
 
-while getopts ":e:c:m:hdlsikt" opt; do
+while getopts ":e:c:m:hdflsikt" opt; do
  case $opt in
   c)
    [ -f $OPTARG ] || die "Configuration file does not exist." 
@@ -72,6 +72,9 @@ while getopts ":e:c:m:hdlsikt" opt; do
     ;;
   d)
     DEBUG='-d -v'
+    ;;
+  f)
+    FORCE_OVERWRITE=true
     ;;
   l)
     LEGACY_DRUSH=true
@@ -153,9 +156,26 @@ echo "Prepare new site using ${MAKE_FILE}." ;
 # Step 2: Download and prepare for the installation using make file
 STEP_2="${DRUSH} ${DEBUG} make --prepare-install -y ${MAKE_FILE} ${BUILD_DIR}/${BUILD_NAME} --uri=${BASE_URL} --environment=${ENVIRONMENT} --strict=0" ;
 
+# drush make --prepare-install command will fail with error
+# "Base path [PATH] already exists." if ${BUILD_DIR}/${BUILD_NAME} already exists.
+# -f will force overwrite of this existing directory.
+if [ $FORCE_OVERWRITE ]
+then
+  RM_CMD="rm -fr ${BUILD_DIR}/${BUILD_NAME}"
+
+  if [ ! $SIMULATE ]
+  then
+    echo '"-f" force overwrite flag set'
+    echo "${RM_CMD}"
+    eval $RM_CMD
+  else
+    tell ${LINENO} 'FORCE_OVERWRITE' "${RM_CMD}"
+  fi
+fi
+
 if [ ! $SIMULATE ] ; then eval $STEP_2 ; else tell ${LINENO} 2 "${STEP_2}" ; fi ;
 
-if [ $? ] ; then echo "Successful: Downloaded and prepared for the installation using make ${MAKE_FILE} and cofiguration ${CONF_FILE}." ; else die ${LINENO} 2 "Fail: Download and prepare for the installation using make make ${MAKE_FILE} and cofiguration ${CONF_FILE}." ; fi ;
+if [ $? -eq 0 ] ; then echo "Successful: Downloaded and prepared for the installation using make ${MAKE_FILE} and configuration ${CONF_FILE}." ; else die ${LINENO} 2 "Fail: Download and prepare for the installation using make make ${MAKE_FILE} and configuration ${CONF_FILE}." ; fi ;
 
 if [ ! $SIMULATE ] ; then [ -d $BUILD_DIR/$BUILD_NAME ] || die ${LINENO} 2 "Unable to install new site, build ${BUILD_DIR}/${BUILD_NAME} does not exist." ; fi
 
@@ -181,7 +201,7 @@ if [ ! $SIMULATE ] ;
   then 
     eval $STEP_3 ;    
     cp -r ${DIR}/../lib/profiles/viewer ${BUILD_DIR}/${BUILD_BASE_NAME}/profiles/viewer
-    if [ $? ] ; then echo "Successful: Reuse code that has been linked in the lib folder." ; else die ${LINENO} 3 "Fail: Reuse code that has been linked in the lib folder." ; fi ; 
+    if [ $? -eq 0 ] ; then echo "Successful: Reuse code that has been linked in the lib folder." ; else die ${LINENO} 3 "Fail: Reuse code that has been linked in the lib folder." ; fi ;
   else 
     tell ${LINENO} 3 "${STEP_3}" ;
 fi ;
@@ -196,28 +216,31 @@ echo $STEP_4 ;
 if [ ! $SIMULATE ] ; 
   then 
     eval $STEP_4 ;
-    if [ $? ] ; then echo "Successful: Ran the site installation." ; else die ${LINENO} 4 "Fail: Run the site installation" ; fi ; 
+    if [ $? -eq 0 ] ; then echo "Successful: Ran the site installation." ; else die ${LINENO} 4 "Fail: Run the site installation" ; fi ;
   else 
     tell ${LINENO} 4 "${STEP_4}" ;
 fi ;
 
 if [ ! $SIMULATE ] ; then if is_drupal_online ; then echo "Successful: Drupal is online" ; else die ${LINENO} "test" "Fail: Drupal is offline." ; fi ; fi; 
 
-if [ -f $BUILD_DIR/$BUILD_NAME/sites/default/settings.php ] ; then
-  chmod 775 $BUILD_DIR/$BUILD_NAME/sites/default/settings.php ;
-  if [ $? ] ; then echo "Successful: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default/settings.php permission to 775." ; else die ${LINENO} "test" "Fail: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default/settings.php permission to 775." ; fi ;    
-fi ;
+if [ ! $SIMULATE ]
+then
+    if [ [ -f $BUILD_DIR/$BUILD_NAME/sites/default/settings.php ] ; then
+      chmod 775 $BUILD_DIR/$BUILD_NAME/sites/default/settings.php ;
+      if [ $? -eq 0 ] ; then echo "Successful: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default/settings.php permission to 775." ; else die ${LINENO} "test" "Fail: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default/settings.php permission to 775." ; fi ;
+    fi ;
 
-if [ -d $BUILD_DIR/$BUILD_NAME/sites/default ] ; then
-  chmod 775 $BUILD_DIR/$BUILD_NAME/sites/default ;
-  if [ $? ] ; then echo "Successful: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default permission to 775." ; else die ${LINENO} "test" "Fail: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default permission to 775." ; fi ;
-fi ;
+    if [ -d $BUILD_DIR/$BUILD_NAME/sites/default ] ; then
+      chmod 775 $BUILD_DIR/$BUILD_NAME/sites/default ;
+      if [ $? -eq 0 ] ; then echo "Successful: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default permission to 775." ; else die ${LINENO} "test" "Fail: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default permission to 775." ; fi ;
+    fi ;
 
-if [ -d $BUILD_DIR/$BUILD_NAME/sites/all/libraries/openlayers ] ; then
-  # Build OpenLayers library
-  sh ${DIR}/build_openlayers.sh -b ${BUILD_DIR}/${BUILD_NAME}
-  if [ $? ] ; then echo "Successful: Build OpenLayers library from source." ; else die ${LINENO} "test" "Fail: Build OpenLayers library from source.." ; fi ;
-fi ;
+    if [ -d $BUILD_DIR/$BUILD_NAME/sites/all/libraries/openlayers ] ; then
+      # Build OpenLayers library
+      sh ${DIR}/build_openlayers.sh -b ${BUILD_DIR}/${BUILD_NAME}
+      if [ $? -eq 0 ] ; then echo "Successful: Build OpenLayers library from source." ; else die ${LINENO} "test" "Fail: Build OpenLayers library from source.." ; fi ;
+    fi ;
+fi
 
 # Step 5: Remove text files and rename install.php to install.php.off
 STEP_5="${DIR}/cleanup.sh ${BUILD_DIR}/${BUILD_NAME}" ;
@@ -225,7 +248,7 @@ STEP_5="${DIR}/cleanup.sh ${BUILD_DIR}/${BUILD_NAME}" ;
 if [ ! $SIMULATE ] ; 
   then 
     eval $STEP_5 ; 
-  if [ $? ] ; then echo "Successful: Remove text files and rename install.php to install.php.off." ; else die ${LINENO} 5 "Fail: Remove text files and rename install.php to install.php.off." ; fi ;
+  if [ $? -eq 0 ] ; then echo "Successful: Remove text files and rename install.php to install.php.off." ; else die ${LINENO} 5 "Fail: Remove text files and rename install.php to install.php.off." ; fi ;
   else 
     tell ${LINENO} 5 "${STEP_5}" ; 
 fi ;
@@ -238,7 +261,7 @@ if [ ! $SIMULATE ] ;
     if [ $SASS ] ;
       then  
         eval $STEP_6 ; 
-        if [ $? ] ; then echo "Successful: Find SASS config.rb and compile the CSS file." ; else die ${LINENO} 6 "Fail: Find SASS config.rb and compile the CSS file." ; fi ;
+        if [ $? -eq 0 ] ; then echo "Successful: Find SASS config.rb and compile the CSS file." ; else die ${LINENO} 6 "Fail: Find SASS config.rb and compile the CSS file." ; fi ;
       fi ;
   else
     tell ${LINENO} 6 "${STEP_6}" ;
@@ -251,7 +274,7 @@ if [ ! $SIMULATE ] ;
     if [ $COOKIES ] ; 
       then 
         eval $STEP_7 ; 
-        if [ $? ] ; then echo "Successful: Share cookies." ; else die ${LINENO} 7 "Fail: Share cookies." ; fi ;
+        if [ $? -eq 0 ] ; then echo "Successful: Share cookies." ; else die ${LINENO} 7 "Fail: Share cookies." ; fi ;
     fi ;
   else 
     tell ${LINENO} 7 "${STEP_7}" ;
