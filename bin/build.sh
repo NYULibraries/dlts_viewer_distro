@@ -158,7 +158,7 @@ STEP_2="${DRUSH} ${DEBUG} make --prepare-install -y ${MAKE_FILE} ${BUILD_DIR}/${
 
 if [ ! $SIMULATE ] ; then eval $STEP_2 ; else tell ${LINENO} 2 "${STEP_2}" ; fi ;
 
-if [ $? -eq 0 ] ; then echo "Successful: Downloaded and prepared for the installation using make ${MAKE_FILE} and cofiguration ${CONF_FILE}." ; else die ${LINENO} 2 "Fail: Download and prepare for the installation using make make ${MAKE_FILE} and cofiguration ${CONF_FILE}." ; fi ;
+if [ $? -eq 0 ] ; then echo "Successful: Downloaded and prepared for the installation using make ${MAKE_FILE} and configuration ${CONF_FILE}." ; else die ${LINENO} 2 "Fail: Download and prepare for the installation using make make ${MAKE_FILE} and configuration ${CONF_FILE}." ; fi ;
 
 if [ ! $SIMULATE ] ; then [ -d $BUILD_DIR/$BUILD_NAME ] || die ${LINENO} 2 "Unable to install new site, build ${BUILD_DIR}/${BUILD_NAME} does not exist." ; fi
 
