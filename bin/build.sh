@@ -53,7 +53,8 @@ DEBUG=""
 ENVIRONMENT="local"
 
 # Don't waste time; if MongoDB PHP extension is not installed, die!!!
-PHPTEST=`php -info | grep mongo`
+# NOTE: php -info doesn't work on dev-dl-pa for some reason.  Have to use php -i
+PHPTEST=`php -i | grep mongo`
 
 if [ -z "$PHPTEST" ]; then die ${LINENO} "test" "Fail: This project needs MongoDB PHP extension."; fi ;
 
