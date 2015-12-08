@@ -223,21 +223,24 @@ fi ;
 
 if [ ! $SIMULATE ] ; then if is_drupal_online ; then echo "Successful: Drupal is online" ; else die ${LINENO} "test" "Fail: Drupal is offline." ; fi ; fi; 
 
-if [ -f $BUILD_DIR/$BUILD_NAME/sites/default/settings.php ] ; then
-  chmod 775 $BUILD_DIR/$BUILD_NAME/sites/default/settings.php ;
-  if [ $? -eq 0 ] ; then echo "Successful: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default/settings.php permission to 775." ; else die ${LINENO} "test" "Fail: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default/settings.php permission to 775." ; fi ;
-fi ;
+if [ ! $SIMULATE ]
+then
+    if [ [ -f $BUILD_DIR/$BUILD_NAME/sites/default/settings.php ] ; then
+      chmod 775 $BUILD_DIR/$BUILD_NAME/sites/default/settings.php ;
+      if [ $? -eq 0 ] ; then echo "Successful: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default/settings.php permission to 775." ; else die ${LINENO} "test" "Fail: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default/settings.php permission to 775." ; fi ;
+    fi ;
 
-if [ -d $BUILD_DIR/$BUILD_NAME/sites/default ] ; then
-  chmod 775 $BUILD_DIR/$BUILD_NAME/sites/default ;
-  if [ $? -eq 0 ] ; then echo "Successful: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default permission to 775." ; else die ${LINENO} "test" "Fail: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default permission to 775." ; fi ;
-fi ;
+    if [ -d $BUILD_DIR/$BUILD_NAME/sites/default ] ; then
+      chmod 775 $BUILD_DIR/$BUILD_NAME/sites/default ;
+      if [ $? -eq 0 ] ; then echo "Successful: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default permission to 775." ; else die ${LINENO} "test" "Fail: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default permission to 775." ; fi ;
+    fi ;
 
-if [ -d $BUILD_DIR/$BUILD_NAME/sites/all/libraries/openlayers ] ; then
-  # Build OpenLayers library
-  sh ${DIR}/build_openlayers.sh -b ${BUILD_DIR}/${BUILD_NAME}
-  if [ $? -eq 0 ] ; then echo "Successful: Build OpenLayers library from source." ; else die ${LINENO} "test" "Fail: Build OpenLayers library from source.." ; fi ;
-fi ;
+    if [ -d $BUILD_DIR/$BUILD_NAME/sites/all/libraries/openlayers ] ; then
+      # Build OpenLayers library
+      sh ${DIR}/build_openlayers.sh -b ${BUILD_DIR}/${BUILD_NAME}
+      if [ $? -eq 0 ] ; then echo "Successful: Build OpenLayers library from source." ; else die ${LINENO} "test" "Fail: Build OpenLayers library from source.." ; fi ;
+    fi ;
+fi
 
 # Step 5: Remove text files and rename install.php to install.php.off
 STEP_5="${DIR}/cleanup.sh ${BUILD_DIR}/${BUILD_NAME}" ;
