@@ -156,6 +156,23 @@ echo "Prepare new site using ${MAKE_FILE}." ;
 # Step 2: Download and prepare for the installation using make file
 STEP_2="${DRUSH} ${DEBUG} make --prepare-install -y ${MAKE_FILE} ${BUILD_DIR}/${BUILD_NAME} --uri=${BASE_URL} --environment=${ENVIRONMENT} --strict=0" ;
 
+# drush make --prepare-install command will fail with error
+# "Base path [PATH] already exists." if ${BUILD_DIR}/${BUILD_NAME} already exists.
+# -f will force overwrite of this existing directory.
+if [ $FORCE_OVERWRITE ]
+then
+  RM_CMD="rm -fr ${BUILD_DIR}/${BUILD_NAME}"
+
+  if [ ! $SIMULATE ]
+  then
+    echo "`-f` force overwrite option was set"
+    echo "${RM_CMD}"
+    eval $RM_CMD
+  else
+    tell ${LINENO} 'FORCE_OVERWRITE' "${RM_CMD}"
+  fi
+fi
+
 if [ ! $SIMULATE ] ; then eval $STEP_2 ; else tell ${LINENO} 2 "${STEP_2}" ; fi ;
 
 if [ $? -eq 0 ] ; then echo "Successful: Downloaded and prepared for the installation using make ${MAKE_FILE} and configuration ${CONF_FILE}." ; else die ${LINENO} 2 "Fail: Download and prepare for the installation using make make ${MAKE_FILE} and configuration ${CONF_FILE}." ; fi ;
