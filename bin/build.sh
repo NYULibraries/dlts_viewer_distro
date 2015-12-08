@@ -57,7 +57,7 @@ PHPTEST=`php -info | grep mongo`
 
 if [ -z "$PHPTEST" ]; then die ${LINENO} "test" "Fail: This project needs MongoDB PHP extension."; fi ;
 
-while getopts ":e:c:m:hdlsikt" opt; do
+while getopts ":e:c:m:hdflsikt" opt; do
  case $opt in
   c)
    [ -f $OPTARG ] || die "Configuration file does not exist." 
@@ -72,6 +72,9 @@ while getopts ":e:c:m:hdlsikt" opt; do
     ;;
   d)
     DEBUG='-d -v'
+    ;;
+  f)
+    FORCE_OVERWRITE=true
     ;;
   l)
     LEGACY_DRUSH=true
