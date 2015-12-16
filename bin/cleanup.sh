@@ -7,7 +7,7 @@ die () {
 
 BUILD=$1
 
-[ ! -z  $BUILD ] || die "Please provide build derectory path"
+[ ! -z  $BUILD ] || die "Please provide build directory path"
 
 [ -d $BUILD ] || die "Build directory $BUILD does not exist"
 
