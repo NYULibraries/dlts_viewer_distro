@@ -15,7 +15,7 @@ projects[date][version] = "2.9"
 
 projects[diff][version] = "3.2"
 
-projects[ds][version] = "2.11"
+projects[ds][version] = "2.12"
 
 projects[entity][version] = "1.6"
 
@@ -23,7 +23,7 @@ projects[entity_translation][version] = "1.0-beta4"
 
 projects[features][version] = "2.7"
 
-projects[field_group][version] = "1.4"
+projects[field_group][version] = "1.5"
 
 projects[geolocation][version] = "1.6"
 
@@ -33,7 +33,7 @@ projects[imagemagick][version] = "1.0"
 
 projects[libraries][version] = "2.2"
 
-projects[link][version] = "1.3"
+projects[link][version] = "1.4"
 
 projects[nodeformcols][version] = "1.0"
 
@@ -55,7 +55,7 @@ projects[uuid][version] = "1.0-beta1"
 
 projects[variable][version] = "2.5"
 
-projects[views][version] = "3.12"
+projects[views][version] = "3.13"
 
 projects[views_datasource][version] = "1.0-alpha2"
 

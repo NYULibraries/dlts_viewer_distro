@@ -94,13 +94,14 @@ while getopts ":e:c:m:hdflsikt" opt; do
    echo " Usage: ./build.sh -m example.make -c example.conf"
    echo " "
    echo " Options:"
-   echo "   -h           Show brief help"
+   echo "   -c <file>    Specify the configuration file to use (e.g., -c example.conf)."   
    echo "   -e           Set the environment variable (default to local) if not set."
-   echo "   -k           Allow site to share cookies accross domain"   
-   echo "   -s           Find SASS based themes and compile"   
-   echo "   -c <file>    Specify the configuration file to use (e.g., -c example.conf)."
+   echo "   -f           Force overwrite of this existing directory"   
+   echo "   -h           Show brief help"
+   echo "   -k           Allow site to share cookies accross domain"
    echo "   -m <file>    Specify the make file to use (e.g., -m example.make)."
-   echo "   -t           Tell all relevant actions (don't actually change the system)."
+   echo "   -s           Find SASS based themes and compile"
+   echo "   -t           Tell all relevant actions (don't actually change the system)."   
    echo " "  
    exit 0
    ;;
@@ -163,7 +164,6 @@ STEP_2="${DRUSH} ${DEBUG} make --prepare-install -y ${MAKE_FILE} ${BUILD_DIR}/${
 if [ $FORCE_OVERWRITE ]
 then
   RM_CMD="rm -fr ${BUILD_DIR}/${BUILD_NAME}"
-
   if [ ! $SIMULATE ]
   then
     echo '"-f" force overwrite flag set'
@@ -207,7 +207,30 @@ if [ ! $SIMULATE ] ;
     tell ${LINENO} 3 "${STEP_3}" ;
 fi ;
 
-echo "Install new site" ;
+# Step 9: MongoDB
+STEP_6="${DIR}/mongodb.sh -c ${CONF_FILE} -b ${BUILD_DIR}/${BUILD_NAME}" ;
+if [ ! $SIMULATE ] ;
+  then
+    eval $STEP_6 ;
+    if [ $? -eq 0 ] ; then echo "Successful: Appending MongoDB host string to default.settings.php" ; else tell ${LINENO} 6 "Fail: Appending MongoDB host string to default.settings.php" ; fi ;
+  else 
+  tell ${LINENO} 6 "${STEP_6}" ;
+fi ;  
+
+# Step 9: Share cookies
+STEP_9="${DIR}/cookies.sh -c ${CONF_FILE} -b ${BUILD_DIR}/${BUILD_NAME}"
+if [ ! $SIMULATE ] ; 
+  then
+    if [ $COOKIES ] ; 
+      then 
+        eval $STEP_9 ; 
+        if [ $? -eq 0 ] ; then echo "Successful: Appending share cookies string to default.settings.php" ; else die ${LINENO} 9 "Fail: Appending share cookies string to default.settings.php" ; fi ;
+    fi ;
+  else 
+    tell ${LINENO} 9 "${STEP_9}" ;
+fi ;  
+
+tell ${LINENO} debug "Run site installation" ;
 
 # Step 4: Run the site installation
 STEP_4="${DRUSH} ${DEBUG} -y site-install ${DRUPAL_INSTALL_PROFILE_NAME} --site-name='${DRUPAL_SITE_NAME}' --account-pass="${DRUPAL_ACCOUNT_PASS}" --account-name=${DRUPAL_ACCOUNT_NAME} --account-mail=${DRUPAL_ACCOUNT_MAIL} --site-mail=${DRUPAL_SITE_MAIL} --db-url=${DRUPAL_SITE_DB_TYPE}://${DRUPAL_SITE_DB_USER}:${DRUPAL_SITE_DB_PASS}@${DRUPAL_SITE_DB_ADDRESS}/${DRUPAL_DB_NAME} --root=${BUILD_DIR}/${BUILD_NAME} --environment=${ENVIRONMENT} --strict=0"
@@ -225,17 +248,15 @@ fi ;
 if [ ! $SIMULATE ] ; then if is_drupal_online ; then echo "Successful: Drupal is online" ; else die ${LINENO} "test" "Fail: Drupal is offline." ; fi ; fi; 
 
 if [ ! $SIMULATE ]
-then
-    if [ [ -f $BUILD_DIR/$BUILD_NAME/sites/default/settings.php ] ; then
-      chmod 775 $BUILD_DIR/$BUILD_NAME/sites/default/settings.php ;
-      if [ $? -eq 0 ] ; then echo "Successful: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default/settings.php permission to 775." ; else die ${LINENO} "test" "Fail: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default/settings.php permission to 775." ; fi ;
+  then
+    if [ -f $BUILD_DIR/$BUILD_NAME/sites/default/settings.php ] ; then
+      chmod 777 $BUILD_DIR/$BUILD_NAME/sites/default/settings.php ;
+      if [ $? -eq 0 ] ; then echo "Successful: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default/settings.php permission to 777." ; else die ${LINENO} "test" "Fail: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default/settings.php permission to 777." ; fi ;
     fi ;
-
     if [ -d $BUILD_DIR/$BUILD_NAME/sites/default ] ; then
-      chmod 775 $BUILD_DIR/$BUILD_NAME/sites/default ;
-      if [ $? -eq 0 ] ; then echo "Successful: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default permission to 775." ; else die ${LINENO} "test" "Fail: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default permission to 775." ; fi ;
+      chmod 777 $BUILD_DIR/$BUILD_NAME/sites/default ;
+      if [ $? -eq 0 ] ; then echo "Successful: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default permission to 777." ; else die ${LINENO} "test" "Fail: Change ${BUILD_DIR}/${BUILD_NAME}/sites/default permission to 777." ; fi ;
     fi ;
-
     if [ -d $BUILD_DIR/$BUILD_NAME/sites/all/libraries/openlayers ] ; then
       # Build OpenLayers library
       sh ${DIR}/build_openlayers.sh -b ${BUILD_DIR}/${BUILD_NAME}
@@ -243,43 +264,30 @@ then
     fi ;
 fi
 
-# Step 5: Remove text files and rename install.php to install.php.off
-STEP_5="${DIR}/cleanup.sh ${BUILD_DIR}/${BUILD_NAME}" ;
+# Step 7: Remove text files and rename install.php to install.php.off
+STEP_7="${DIR}/cleanup.sh ${BUILD_DIR}/${BUILD_NAME}" ;
 
 if [ ! $SIMULATE ] ; 
   then 
-    eval $STEP_5 ; 
+    eval $STEP_7 ; 
   if [ $? -eq 0 ] ; then echo "Successful: Remove text files and rename install.php to install.php.off." ; else die ${LINENO} 5 "Fail: Remove text files and rename install.php to install.php.off." ; fi ;
   else 
-    tell ${LINENO} 5 "${STEP_5}" ; 
+    tell ${LINENO} 7 "${STEP_7}" ; 
 fi ;
 
-# Step 6: Find SASS config.rb and compile the CSS file
-STEP_6="${DIR}/sass.sh ${BUILD_DIR}/${BUILD_NAME}" ;
+# Step 8: Find SASS config.rb and compile the CSS file
+STEP_8="${DIR}/sass.sh ${BUILD_DIR}/${BUILD_NAME}" ;
  
 if [ ! $SIMULATE ] ; 
   then 
     if [ $SASS ] ;
       then  
-        eval $STEP_6 ; 
-        if [ $? -eq 0 ] ; then echo "Successful: Find SASS config.rb and compile the CSS file." ; else die ${LINENO} 6 "Fail: Find SASS config.rb and compile the CSS file." ; fi ;
+        eval $STEP_8 ; 
+        if [ $? -eq 0 ] ; then echo "Successful: Find SASS config.rb and compile the CSS file." ; else die ${LINENO} 8 "Fail: Find SASS config.rb and compile the CSS file." ; fi ;
       fi ;
   else
-    tell ${LINENO} 6 "${STEP_6}" ;
+    tell ${LINENO} 8 "${STEP_8}" ;
 fi
-
-# Step 7: Share cookies
-STEP_7="${DIR}/cookies.sh -c ${CONF_FILE} -b ${BUILD_DIR}/${BUILD_NAME}"
-if [ ! $SIMULATE ] ; 
-  then
-    if [ $COOKIES ] ; 
-      then 
-        eval $STEP_7 ; 
-        if [ $? -eq 0 ] ; then echo "Successful: Share cookies." ; else die ${LINENO} 7 "Fail: Share cookies." ; fi ;
-    fi ;
-  else 
-    tell ${LINENO} 7 "${STEP_7}" ;
-fi ;
 
 if [ ! $SIMULATE ] ; 
   then
