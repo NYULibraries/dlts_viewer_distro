@@ -2,7 +2,8 @@
 
 die () {
   echo "file: ${0} | line: ${1} | step: ${2} | message: ${3}" ;
-  rm ${DIR}/../temp/${BUILD_BASE_NAME}.build.pid ;
+  #rm ${DIR}/temp/${BUILD_BASE_NAME}.build.pid ;
+  #rm  /Users/katepechekhonova/testdrive/dlts_viewer_distro/temp/build.pd;
   exit 1 ;
 }
 
