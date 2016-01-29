@@ -61,11 +61,6 @@ projects[views_datasource][version] = "1.0-alpha2"
 
 projects[mongodb][version] = "1.0-rc2"
 
-projects[admin_views][version] = "1.5"
-
-projects[views_bulk_operations][version] = "3.3"
-
-
 ; Themes
 projects[rubik][version] = "4.3"
 
