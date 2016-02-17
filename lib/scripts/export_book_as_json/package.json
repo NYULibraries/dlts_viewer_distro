@@ -18,5 +18,8 @@
   "dependencies": {
     "request": "*",
     "js2xmlparser": "*"
+  },
+  "devDependencies": {
+    "minimist": "^1.2.0"
   }
 }
