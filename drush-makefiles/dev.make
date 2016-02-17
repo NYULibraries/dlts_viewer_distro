@@ -2,7 +2,7 @@
 core = 7.x
 
 api = 2
-projects[drupal][version] = "7.41"
+projects[drupal][version] = "7.42"
 
 ; Modules
 projects[admin_menu][version] = "3.0-rc5"
@@ -15,7 +15,7 @@ projects[date][version] = "2.9"
 
 projects[diff][version] = "3.2"
 
-projects[ds][version] = "2.12"
+projects[ds][version] = "2.13"
 
 projects[entity][version] = "1.6"
 
@@ -41,7 +41,7 @@ projects[references][version] = "2.1"
 
 projects[pathauto][version] = "1.3"
 
-projects[services][version] = "3.12"
+projects[services][version] = "3.13"
 
 projects[strongarm][version] = "2.0"
 
@@ -54,6 +54,10 @@ projects[unique_field][version] = "1.0-rc1"
 projects[uuid][version] = "1.0-beta1"
 
 projects[variable][version] = "2.5"
+
+projects[devel][version] = "1.5"
+
+projects[delete_all][version] = "1.1"
 
 projects[views][version] = "3.13"
 
