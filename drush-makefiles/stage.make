@@ -23,7 +23,7 @@ projects[entity_translation][version] = "1.0-beta4"
 
 projects[features][version] = "2.7"
 
-projects[field_group][version] = "1.4"
+projects[field_group][version] = "1.5"
 
 projects[geolocation][version] = "1.6"
 
@@ -33,7 +33,7 @@ projects[imagemagick][version] = "1.0"
 
 projects[libraries][version] = "2.2"
 
-projects[link][version] = "1.3"
+projects[link][version] = "1.4"
 
 projects[nodeformcols][version] = "1.0"
 
@@ -41,7 +41,7 @@ projects[references][version] = "2.1"
 
 projects[pathauto][version] = "1.3"
 
-projects[services][version] = "3.12"
+projects[services][version] = "3.13"
 
 projects[strongarm][version] = "2.0"
 
@@ -55,7 +55,11 @@ projects[uuid][version] = "1.0-beta1"
 
 projects[variable][version] = "2.5"
 
-projects[views][version] = "3.12"
+projects[devel][version] = "1.5"
+
+projects[delete_all][version] = "1.1"
+
+projects[views][version] = "3.13"
 
 projects[views_datasource][version] = "1.0-alpha2"
 
@@ -71,7 +75,6 @@ projects[tao][version] = "3.1"
 ; and url is the url of the download.
 projects[dlts_viewer][download][type] = "git"
 projects[dlts_viewer][download][url] = "https://github.com/NYULibraries/dlts_viewer.git"
-projects[dlts_viewer][download][branch] = "stage"
 projects[dlts_viewer][type] = "module"
 
 ; Libraries
