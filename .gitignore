@@ -11,6 +11,7 @@ configs/*
 node_modules
 lib/modules/*
 lib/themes/*
+lib/others
 
 !lib/modules/README
 !lib/themes/README
